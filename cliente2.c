@@ -10,7 +10,9 @@ int main(int argc , char *argv[])
 {
     int sock;
     struct sockaddr_in server;
-    char message[1000] , server_reply[2000];
+    char message[10] = "\0", server_reply[10] = "\0";
+
+    int m = 0;
      
     //Criando socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -34,29 +36,32 @@ int main(int argc , char *argv[])
     puts("Conectado.\n");
      
     //Continuar a cominucacao com o servidor
-    while(1)
-    {
-        printf("Enter message : ");
-        scanf("%s" , message);
-	//printf("%s",message);
-         
-        //Enviar dados
-        if( send(sock , message , strlen(message) , 0) < 0)
-        {
-            puts("Send failed");
-            return 1;
-        }
-         
-        //Receber resposta do servidor
-        if( recv(sock , server_reply , 2000 , 0) < 0)
-        {
-            puts("recv failed");
-            break;
-        }
-         
-        puts("Server reply :");
-        printf("%s",server_reply);
-    }
+	while(1)
+	{
+		printf("Enter message : ");
+		scanf("%s" , message);
+		
+		 
+		//Enviar dados
+		if( send(sock , message , strlen(message) , 0) < 0)
+		{
+		    puts("Send failed");
+		    return 1;
+		}
+	   	    
+		//Receber resposta do servidor
+		if( recv(sock , server_reply , 10 , 0) < 0)
+		{
+		    puts("recv failed");
+		    break;
+		}
+		 
+		puts("\nServer reply :");
+		printf("%s\n\n",server_reply);
+	
+		//message[10] = "\0";
+	
+	}
      
     close(sock);
     return 0;

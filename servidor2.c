@@ -12,7 +12,7 @@ int main(int argc , char *argv[])
 {
 	int socket_desc , client_sock , c , read_size;
 	struct sockaddr_in server , client;
-	char client_message[2000];
+	char client_message[10] = "\0";
 
 	//Criando socket
 	socket_desc = socket(AF_INET , SOCK_STREAM , 0);
@@ -47,21 +47,23 @@ int main(int argc , char *argv[])
 
 	//Aceitando conexao de um cliente
 	client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c);
+
 	if (client_sock < 0)
 	{
-	perror("accept failed");
-	return 1;
-	}
-	puts("Connection accepted\n\n");
-
-	//Receive a message from client
-	while( (read_size = recv(client_sock , client_message , 2000 , 0)) > 0 )
-	{
-	//Send the message back to client
-	write(client_sock , client_message , strlen(client_message));
+		perror("accept failed");
+		return 1;
 	}
 	
-	if(read_size == 0)
+	puts("Connection accepted\n\n");
+	
+	//Receive a message from client
+	while( (read_size = recv(client_sock , client_message , 10 , 0)) > 0 )
+	{
+		//Send the message back to client
+		write(client_sock , client_message , strlen(client_message));
+	}
+	
+	if(read_size == 0)	
 	{	
 		puts("Client disconnected");
 		fflush(stdout);
