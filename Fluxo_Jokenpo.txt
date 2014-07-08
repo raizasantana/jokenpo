@@ -1,0 +1,14 @@
+1) Cliente
+
+- Usuário informa seu nick.
+- Servidor coloca o usuário online e disponível para disputar partidas.
+- Usuário decide iniciar partida e define quantas rodadas serão disputadas.
+- Servidor busca outro usuário disponível e convida para jogar.
+- Usuário aceita o convite e a partida é iniciada.
+
+Enquanto as rodadas não terminarem:
+	- Usuários enviam suas jogadas.
+	- Servidor analisa e define o vencedor, exibindo para os dois as opções escolhidas para os dois.
+	- Servidor envia para o usuário passivo o resultado da rodada.
+
+Quando as rodadas terminarem o servidor anuncia o vencedor a todos os clientes e encerra a conexão.
