@@ -19,13 +19,11 @@ int criar_sock()
 	return sock;	
 }
 
-struct sockaddr_in criar_server()
-{
-	struct sockaddr_in server;
-	
-	server.sin_addr.s_addr = inet_addr("127.0.0.1");
-	server.sin_family = AF_INET;
-	server.sin_port = htons( 8888 );
+void  config_server(struct sockaddr_in *server)
+{	
+	server->sin_addr.s_addr = inet_addr("127.0.0.1");
+	server->sin_family = AF_INET;
+	server->sin_port = htons( 8888 );
 }
 
 
@@ -36,60 +34,50 @@ void conectar_servidor(int sock, struct sockaddr_in server)
 		perror("Erro de conexão.");
 		exit (EXIT_FAILURE);	
 	}
-
-		puts("Cliente conectado.\n");
 }
 
-void enviar_mensagem(char *msg, int sock)
+void enviar_mensagem(char *msg, int sock, int flag)
 {
-	if( send(sock , msg , strlen(msg) , 0) < 0)
+	if( send(sock , msg , strlen(msg) , flag) < 0)
 	{
 		perror("Mensagen não enviada.");
 		exit (EXIT_FAILURE);
 	}
 }
 
+char *get_msg(int sock, int flag)
+{
+	char *server_reply = malloc(10);
+	if( recv(sock , server_reply , 10 , flag) < 0)
+	{
+		perror("Mensagen não recebida.");
+		exit (EXIT_FAILURE);
+	}
+
+	return server_reply;
+}
+
 int main(int argc , char *argv[])
 {
-	int sock = criar_sock();
-	struct sockaddr_in server = criar_server();	
+	int sock;
+	char nickname[10] = "\0", *resposta;
+	struct sockaddr_in server;
 
-	char nickname[10] = "\0";
 
-
+	sock = criar_sock();	
+	config_server(&server);		
 	conectar_servidor(sock, server);
-	
+
+	printf("\n\n\n[ Jokenpo - BBT ]\n\n");
 	printf("\n\nInforme seu nick: (10 CARACTERES) ");
 	scanf("%s" , nickname);
 
+	enviar_mensagem(nickname, sock, 0);
 	
-	/*Continuar a cominucacao com o servidor
-	while(1)
-	{
-		printf("Enter message : ");
-		scanf("%s" , message);
+	resposta = get_msg(sock,0);
+
 	
-		 
-		//Enviar dados
-		if( send(sock , message , strlen(message) , 0) < 0)
-		{
-		    puts("Send failed");
-		    return 1;
-		}
-	   	    
-		//Receber resposta do servidor
-		if( recv(sock , server_reply , 10 , 0) < 0)
-		{
-		    puts("recv failed");
-		    break;
-		}
-		 
-		puts("\nServer reply :");
-		printf("%s\n\n",server_reply);
-
-		//message[10] = "\0";
-
-	}*/
+	
 
 	close(sock);
 	return 0;
