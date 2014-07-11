@@ -73,6 +73,9 @@ void *connection_handler(void *socket_desc)
 	nickname = get_msg(sock, 0);
 	
 	add_usuario(nickname, sock);
+
+	message = get_msg(sock, 1);
+	printf("%s\n",message);
 	
 	/*Receive a message from client
 	while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
@@ -101,7 +104,7 @@ void *connection_handler(void *socket_desc)
 	}
 	 */
 	//Free the socket pointer
-	free(socket_desc);
+	//free(socket_desc);
 
 	return 0;
 }
@@ -117,7 +120,7 @@ int main(int argc , char *argv[])
 	sock = criar_sock();
 	config_server(&server);
 	binder(sock, server);
-	listen(sock , 3);
+	listen(sock , 10);
 
 	puts("Esperando por conexoes...\n");
 
@@ -139,7 +142,7 @@ int main(int argc , char *argv[])
 		}
 		 
 		//Now join the thread , so that we dont terminate before the thread
-		//pthread_join( sniffer_thread , NULL);
+		pthread_join( sniffer_thread , NULL);
 		puts("Handler assigned");
 	}
 
