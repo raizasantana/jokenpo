@@ -33,9 +33,9 @@ void conectar_servidor(int sock, struct sockaddr_in server)
 	}
 }
 
-void enviar_mensagem(char *msg, int sock, int flag)
+void enviar_mensagem(char *msg, int sock)
 {
-	if( send(sock , msg , strlen(msg) , flag) < 0)
+	if( send(sock , msg , strlen(msg) , 0) < 0)
 	{
 		perror("Mensagen não enviada.");
 		exit (EXIT_FAILURE);
@@ -68,7 +68,7 @@ int main(int argc , char *argv[])
 	printf("\n\nInforme seu nick: (10 CARACTERES) ");
 	scanf("%s" , nickname);
 
-	enviar_mensagem(nickname, sock, 0);	
+	enviar_mensagem(nickname, sock);	
 	resposta = get_msg(sock,0);
 	printf("\n\n%s\n",resposta);
 	
@@ -82,13 +82,16 @@ int main(int argc , char *argv[])
 		printf("Quantas rodadas deseja jogar? ");
 		scanf("%d",&qtd_rodadas);
 		sprintf(mensagem,"%d",qtd_rodadas);
-		printf("%s\n\n\n",mensagem);
-		enviar_mensagem(mensagem, sock, 0);
+		enviar_mensagem(mensagem, sock);
+		resposta = get_msg(sock,0);
+		printf("%s\n",resposta);
 	}
 	else
 		printf("Son of a bitch!");
 	
+	
 
-	close(sock);
+
+//	close(sock);
 	return 0;
 }

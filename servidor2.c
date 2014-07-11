@@ -8,12 +8,14 @@
 
 #define MAX 5
 
-static int indice = 0;
+static int indice = -1;
+static int partida = 0;
 char *lista_usuarios[MAX];
+int lista_sockets[MAX];
 
 int criar_sock()
 {
-int sock = socket(AF_INET , SOCK_STREAM , 0);
+	int sock = socket(AF_INET , SOCK_STREAM , 0);
 	if (sock == -1)
 	{
 		perror("Não foi possível criar o socket.");
@@ -39,6 +41,15 @@ void binder(int sock, struct sockaddr_in server)
 	}
 }
 
+void enviar_mensagem(char *msg, int sock)
+{
+	if( send(sock , msg , strlen(msg) , 0) < 0)
+	{
+		perror("Mensagen não enviada.");
+		exit (EXIT_FAILURE);
+	}
+}
+
 char *get_msg(int sock, int flag)
 {
 	char *server_reply = malloc(2000);
@@ -55,14 +66,34 @@ char *get_msg(int sock, int flag)
 void add_usuario(char *nickname, int sock)
 {	
 	char *msg = malloc(10);
-
-	lista_usuarios[indice] = nickname;
+	
 	indice++;
-
+	lista_usuarios[indice] = nickname;
+	lista_sockets[indice] = sock;
 	sprintf(msg, "Usuário %s is online.\n",nickname);
 	write(sock , msg , strlen(msg));
 }
 
+void lista_usuarios_online()
+{
+	int i;
+	for(i = 0; i <= indice; i++)
+		printf("Nickname: %s | Socket: %d\n",lista_usuarios[i], lista_sockets[i]);
+}
+
+
+void comecar_partida()
+{	
+	partida = 1;
+	int i;
+	char *mensagem = malloc(100);
+	sprintf(mensagem,"\n\n*** Partida iniciada. %d jogadores na partida. ***",indice);
+
+	for(i = 0; i <= indice; i++)
+	{	printf("STARTS");
+		enviar_mensagem(mensagem,lista_sockets[i]);
+	}
+}
 
 void *connection_handler(void *socket_desc)
 {
@@ -76,12 +107,14 @@ void *connection_handler(void *socket_desc)
 	
 	//Qtd Rodadas
 	message = get_msg(sock, 0);
-	printf("STRING VERSION: %s\n",message);
-
 	qtd_rodadas = atoi(message);
 
-	printf("Qtd %d\n",qtd_rodadas);
-	
+	lista_usuarios_online();
+
+	if(indice >=1) //&& partida == 0)
+		comecar_partida();
+
+
 	/*Receive a message from client
 	while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
 	{
@@ -127,14 +160,14 @@ int main(int argc , char *argv[])
 	binder(sock, server);
 	listen(sock , 10);
 
-	puts("Esperando por conexoes...\n");
+	puts("\n\nSERVIDOR ONLINE\n");
 
 	c = sizeof(struct sockaddr_in);
 
 
 	while( (client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c)) )
 	{
-		//puts("Connection accepted");
+		puts("Aceitou uma conexão.");
 		 
 		pthread_t sniffer_thread;
 		new_sock = malloc(1);
@@ -148,7 +181,7 @@ int main(int argc , char *argv[])
 		 
 		//Now join the thread , so that we dont terminate before the thread
 		pthread_join( sniffer_thread , NULL);
-		puts("Handler assigned");
+		puts("Handler assigned\n");
 	}
 
 
