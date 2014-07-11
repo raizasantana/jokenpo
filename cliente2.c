@@ -81,8 +81,9 @@ int main(int argc , char *argv[])
 	{
 		printf("Quantas rodadas deseja jogar? ");
 		scanf("%d",&qtd_rodadas);
-		sprintf(mensagem,"%i",qtd_rodadas);
-		enviar_mensagem(mensagem, sock, 1);
+		sprintf(mensagem,"%d",qtd_rodadas);
+		printf("%s\n\n\n",mensagem);
+		enviar_mensagem(mensagem, sock, 0);
 	}
 	else
 		printf("Son of a bitch!");

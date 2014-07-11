@@ -41,9 +41,10 @@ void binder(int sock, struct sockaddr_in server)
 
 char *get_msg(int sock, int flag)
 {
-	char *server_reply = malloc(10);
-	if( recv(sock , server_reply , 10 , flag) < 0)
-	{
+	char *server_reply = malloc(2000);
+	if( recv(sock , server_reply , 2000 , flag) < 0)
+	{	
+		printf("Flag mensagem com erro: %d. ",flag);
 		perror("Mensagen não recebida.");
 		exit (EXIT_FAILURE);
 	}
@@ -65,17 +66,21 @@ void add_usuario(char *nickname, int sock)
 
 void *connection_handler(void *socket_desc)
 {
-	int sock = *(int*)socket_desc;
+	int sock = *(int*)socket_desc, qtd_rodadas = 0;
 	int read_size;
-	char *message, *nickname = malloc(10);
-	message = malloc(2000);
+	char *message = malloc(2000), *nickname = malloc(10);
 
 	nickname = get_msg(sock, 0);
 	
 	add_usuario(nickname, sock);
+	
+	//Qtd Rodadas
+	message = get_msg(sock, 0);
+	printf("STRING VERSION: %s\n",message);
 
-	message = get_msg(sock, 1);
-	printf("%s\n",message);
+	qtd_rodadas = atoi(message);
+
+	printf("Qtd %d\n",qtd_rodadas);
 	
 	/*Receive a message from client
 	while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
