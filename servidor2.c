@@ -7,11 +7,249 @@
 #include <pthread.h> //for threading , link with lpthread
 
 #define MAX 5
+#define RODADAS 3
 
-static int indice = -1;
+#define PEDRA 0
+#define PAPEL 1
+#define TESOURA 2
+#define LAGARTO 3
+#define SPOCK 4
+#define EMPATE 5
+
+static int indice = -1, qtd_v1 = 0, qtd_v2 = 0;
 static int partida = 0;
 char *lista_usuarios[MAX];
 int lista_sockets[MAX];
+
+typedef struct
+{
+	int vencedor;
+	char *msg;
+} Winner;
+
+Winner vencedor_rodada(int jogador1, int jogador2)
+{	
+	Winner r;
+
+		if (jogador1 == jogador2)
+		{			
+			r.msg = "Empate.";
+			return r;
+		}
+		else
+		{
+			switch (jogador1)
+			{
+				case 0:
+					if (jogador2 == 3)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;
+						char *m = malloc(1000);
+						sprintf(m,"Pedra esmaga lagarto.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+						
+					if(jogador2 == 2)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;
+						char *m = malloc(1000);
+						sprintf(m,"Pedra esmaga tesoura.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+
+					if (jogador2 == 1)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;	
+						char *m = malloc(1000);
+						sprintf(m,"Papel cobre pedra.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;	
+						
+					}
+
+					if( jogador2 == 4)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Spock vaporiza pedra.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					return r;
+	
+				case 1:
+					if (jogador2 == 0)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;						
+						char *m = malloc(1000);
+						sprintf(m,"Papel cobre pedra.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+								
+					}
+					if(jogador2 == 4)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;						
+						char *m = malloc(1000);
+						sprintf(m,"Papel desqualifica Spock.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					if ( jogador2 == 2)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;							
+						char *m = malloc(1000);
+						sprintf(m,"Tesoura corta papel.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+						
+					}
+					if(jogador2 == 3)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Lagarto come papel.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+				
+					return r;
+	
+				case 2:
+					if ( jogador2 == 1)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;							
+						char *m = malloc(1000);
+						sprintf(m,"Tesoura corta papel.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+						
+					}
+					if(jogador2 == 3)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;					
+						char *m = malloc(1000);
+						sprintf(m,"Tesoura decapita lagarto.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+							
+					}
+					if(jogador2 == 4)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Spock dobra tesoura.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					if(jogador2 == 0)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Pedra esmaga tesoura.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+				
+					return r;
+
+				case 3:
+					if ( jogador2 == 4)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;						
+						char *m = malloc(1000);
+						sprintf(m,"Lagarto envenena Spock.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					if(jogador2 == 1)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;						
+						char *m = malloc(1000);
+						sprintf(m,"Lagarto come papel.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					if(jogador2 == 2)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;							
+						char *m = malloc(1000);
+						sprintf(m,"Tesoura decapita lagarto.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+							
+					}
+					if (jogador2 == 0)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Pedra esmaga lagarto.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+
+				
+					return r;	
+
+				case 4:
+					if( jogador2 == 0)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;						
+						char *m = malloc(1000);
+						sprintf(m,"Spock vaporiza pedra.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					if(jogador2 == 2)
+					{
+						r.vencedor = jogador1;
+						qtd_v1++;						
+						char *m = malloc(1000);
+						sprintf(m,"Spock dobra tesoura.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					if(jogador2 == 1)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Papel desqualifica Spock.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+				
+					}
+					if ( jogador2 == 3)
+					{
+						r.vencedor = jogador2;
+						qtd_v2++;						
+						char *m = malloc(1000);
+						sprintf(m,"Lagarto envenena Spock.\n***PLACAR***\n%s %d X %s %d",lista_usuarios[0],qtd_v1,lista_usuarios[1],qtd_v2);
+						r.msg = m;
+					
+					}
+					return r;
+		
+				default:			
+					r.msg = "Jogada Invalida.";
+					return r;
+				
+			}
+		}
+}
+
 
 int criar_sock()
 {
@@ -70,8 +308,8 @@ void add_usuario(char *nickname, int sock)
 	indice++;
 	lista_usuarios[indice] = nickname;
 	lista_sockets[indice] = sock;
-	sprintf(msg, "Usuário %s is online.\n",nickname);
-	write(sock , msg , strlen(msg));
+	sprintf(msg, "Usuário %s is online.",nickname);
+	enviar_mensagem(msg,sock);
 }
 
 void lista_usuarios_online()
@@ -82,18 +320,16 @@ void lista_usuarios_online()
 }
 
 
-void comecar_partida()
-{	
-	partida = 1;
+void notificar_partida_iniciada()
+{
 	int i;
 	char *mensagem = malloc(100);
-	sprintf(mensagem,"\n\n*** Partida iniciada. %d jogadores na partida. ***",indice);
+	sprintf(mensagem,"\n\n\t*** Já existe uma partida iniciada. Espere a próxima. ***\n");
 
 	for(i = 0; i <= indice; i++)
-	{	printf("STARTS");
 		enviar_mensagem(mensagem,lista_sockets[i]);
-	}
 }
+
 
 void *connection_handler(void *socket_desc)
 {
@@ -102,17 +338,48 @@ void *connection_handler(void *socket_desc)
 	char *message = malloc(2000), *nickname = malloc(10);
 
 	nickname = get_msg(sock, 0);
-	
 	add_usuario(nickname, sock);
 	
-	//Qtd Rodadas
+	//Iniciar partida
 	message = get_msg(sock, 0);
-	qtd_rodadas = atoi(message);
 
 	lista_usuarios_online();
 
-	if(indice >=1) //&& partida == 0)
-		comecar_partida();
+	if(indice >=1 && partida == 0)
+	{
+		partida = 1;
+		int i, p1, p2, n = 1;
+		char *mensagem = malloc(100), *mensagem2 = malloc(100), *msg_resultado = malloc(1000);
+		Winner winner; 
+
+			sprintf(mensagem,"\n\n\t*** RODADA %d. ***\n\n\tPEDRA 0\n\tPAPEL 1\n\tTESOURA 2\n\tLAGARTO 3\n\tSPOCK 4\n\nQual jogada?", 1);
+
+			for(i = 0; i <= indice; i++)
+				enviar_mensagem(mensagem,lista_sockets[i]);
+
+			mensagem = get_msg(lista_sockets[0], 0);
+			p1 = atoi(mensagem);
+
+			mensagem2 = get_msg(lista_sockets[1], 0);
+			p2 = atoi(mensagem2);
+
+			printf("Jogadas (P1: %d) (P2: %d)\n",p1,p2);
+
+			winner = vencedor_rodada(p1, p2);
+
+//			puts(winner.msg);
+			
+			for(i = 0; i <= indice; i++)
+				enviar_mensagem(winner.msg,lista_sockets[i]);
+	}		
+	else if (partida == 1)
+		printf("HEY");
+
+//comecar_partida(sock);
+	
+		//notificar_partida_iniciada();
+	//else
+	//	enviar_mensagem("\t***Somente um jogador online. ***",lista_sockets[0]);
 
 
 	/*Receive a message from client

@@ -4,6 +4,9 @@
 #include<sys/socket.h>    //socket
 #include<arpa/inet.h> //inet_addr
 
+
+#define RODADAS 3
+
 int criar_sock()
 {
 	int sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -56,42 +59,52 @@ char *get_msg(int sock, int flag)
 
 int main(int argc , char *argv[])
 {
-	int sock, qtd_rodadas;
-	char nickname[10] = "\0", *resposta, iniciar, *mensagem = malloc(100);
+	int sock, qtd_rodadas, jogada;
+	char nickname[10] = "\0", *resposta, *mensagem = malloc(100), *iniciar = malloc(1);
 	struct sockaddr_in server;
 
 	sock = criar_sock();	
 	config_server(&server);		
 	conectar_servidor(sock, server);
 
-	printf("\n\n\n[ Jokenpo - BBT ]\n\n");
+	printf("\n\n\n\t[ Jokenpo - BBT ]\n\n");
+	
+	//Nick	
 	printf("\n\nInforme seu nick: (10 CARACTERES) ");
 	scanf("%s" , nickname);
+	enviar_mensagem(nickname, sock);
 
-	enviar_mensagem(nickname, sock);	
+	//Retorno
 	resposta = get_msg(sock,0);
-	printf("\n\n%s\n",resposta);
+	printf("\n\n\t*** %s ***\n\n",resposta);
 	
 	printf("Deseja iniciar partida? [S/N] ");
-	scanf("%s",&iniciar);
+	scanf("%s",iniciar);
 
-	fflush(stdin);
-
-	if(iniciar == 'S')
+	if(strcmp(iniciar, "S") == 0)
 	{
-		printf("Quantas rodadas deseja jogar? ");
-		scanf("%d",&qtd_rodadas);
-		sprintf(mensagem,"%d",qtd_rodadas);
-		enviar_mensagem(mensagem, sock);
+		enviar_mensagem(iniciar, sock);	
+
 		resposta = get_msg(sock,0);
-		printf("%s\n",resposta);
+		printf("%s\n\n",resposta);
+
+		qtd_rodadas = 0;	
+
+		fflush(stdin);
+		scanf("%d",&jogada);
+		sprintf(mensagem,"%d",jogada);
+		enviar_mensagem(mensagem, sock);
+
+		resposta = get_msg(sock,0);
+		printf("\n\n%s\n",resposta);
+		qtd_rodadas++;
+		
+
+		
 	}
 	else
-		printf("Son of a bitch!");
+		close(sock);
 	
 	
-
-
-//	close(sock);
 	return 0;
 }
