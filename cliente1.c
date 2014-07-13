@@ -4,9 +4,6 @@
 #include<sys/socket.h>    //socket
 #include<arpa/inet.h> //inet_addr
 
-
-#define RODADAS 3
-
 int criar_sock()
 {
 	int sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -44,11 +41,10 @@ void enviar_mensagem(char *msg, int sock)
 		exit (EXIT_FAILURE);
 	}
 }
-
 char *get_msg(int sock, int flag)
 {
-	char *server_reply = malloc(1000);
-	if( recv(sock , server_reply , 1000 , flag) < 0)
+	char *server_reply = malloc(2000);
+	if( recv(sock , server_reply , 2000 , flag) < 0)
 	{
 		perror("Mensagen não recebida.");
 		exit (EXIT_FAILURE);
@@ -59,8 +55,8 @@ char *get_msg(int sock, int flag)
 
 int main(int argc , char *argv[])
 {
-	int sock, qtd_rodadas, jogada;
-	char nickname[10] = "\0", *resposta, *mensagem = malloc(1000), *iniciar = malloc(1);
+	int sock, qtd_rodadas = 0, jogada;
+	char nickname[10] = "\0", *resposta, *mensagem = malloc(100), *iniciar = malloc(1);
 	struct sockaddr_in server;
 
 	sock = criar_sock();	
@@ -68,46 +64,16 @@ int main(int argc , char *argv[])
 	conectar_servidor(sock, server);
 
 	printf("\n\n\n\t[ Jokenpo - BBT ]\n\n");
-	
+
 	//Nick	
 	printf("\n\nInforme seu nick: (10 CARACTERES) ");
 	scanf("%s" , nickname);
 	enviar_mensagem(nickname, sock);
-
 	
-	printf("\tDeseja iniciar partida? [S/N] ");
-	scanf("%s",iniciar);
-
-	if(strcmp(iniciar, "S") == 0)
+	while(strlen(resposta) > 0)
 	{
-		enviar_mensagem(iniciar, sock);	
-	
-		
-			resposta = get_msg(sock,0);
-			printf("%s\n\n",resposta);
-
-			fflush(stdin);
-			scanf("%d",&jogada);
-			sprintf(mensagem,"%d",jogada);
-			enviar_mensagem(mensagem, sock);
-
-			resposta = get_msg(sock,0);
-			printf("\n\n%s\n",resposta);
-
-				
+		resposta = get_msg(sock,0);
+		printf("\n\n\t%s\n\n",resposta);
 	}
-	else
-	{
-		while(1)
-		{	
-			resposta = get_msg(sock,0);
-			printf("\n\n%s\n",resposta);
-		}
-	}		
-	
-
 	close(sock);
-
-	return 0;
 }
-

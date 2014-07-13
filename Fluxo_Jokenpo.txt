@@ -2,8 +2,9 @@
 
 - Usuário informa seu nick.
 - Servidor coloca o usuário online e disponível para disputar partidas.
-- Usuário decide iniciar partida e define quantas rodadas serão disputadas.
-- Servidor busca outro usuário disponível e convida para jogar.
+- Usuário decide iniciar partida.
+
+- Servidor convida outro usuario disponivel pra jogar.
 - Usuário aceita o convite e a partida é iniciada.
 
 Enquanto as rodadas não terminarem:

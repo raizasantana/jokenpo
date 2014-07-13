@@ -18,8 +18,8 @@
 
 static int indice = -1, qtd_v1 = 0, qtd_v2 = 0;
 static int partida = 0;
-char *lista_usuarios[MAX];
-int lista_sockets[MAX];
+char *lista_usuarios[MAX], *passivo;
+int lista_sockets[MAX], sck_passivo = 0;
 
 typedef struct
 {
@@ -333,48 +333,52 @@ void notificar_partida_iniciada()
 
 void *connection_handler(void *socket_desc)
 {
-	int sock = *(int*)socket_desc, qtd_rodadas = 0;
+	int sock = *(int*)socket_desc, qtd_rodadas = 0, i;
 	int read_size;
 	char *message = malloc(2000), *nickname = malloc(10);
 
 	nickname = get_msg(sock, 0);
-	add_usuario(nickname, sock);
+	char *msg = malloc(1000);
+
+	//Iniciar partida?
+	message = get_msg(sock, 0);	
+
+	if(indice > 0)
+		indice++;
+		lista_usuarios[indice] = nickname;
+		lista_sockets[indice] = sock;
 	
-	//Iniciar partida
-	message = get_msg(sock, 0);
 
 	lista_usuarios_online();
 
-	if(indice >=1 && partida == 0)
-	{
+	if(indice == 1)
+	{	
+
 		partida = 1;
 		int i, p1, p2, n = 1;
 		char *mensagem = malloc(100), *mensagem2 = malloc(100), *msg_resultado = malloc(1000);
 		Winner winner; 
 
-			sprintf(mensagem,"\n\n\t*** RODADA %d. ***\n\n\tPEDRA 0\n\tPAPEL 1\n\tTESOURA 2\n\tLAGARTO 3\n\tSPOCK 4\n\nQual jogada?", 1);
+		for(i = 1; i <= indice; i++)
+			enviar_mensagem("\n\n\t*** JOKENPO!. ***\n\n\tPEDRA 0\n\tPAPEL 1\n\tTESOURA 2\n\tLAGARTO 3\n\tSPOCK 4\n\nQual jogada?",lista_sockets[i]);
+				
 
-			for(i = 0; i <= indice; i++)
-				enviar_mensagem(mensagem,lista_sockets[i]);
 
-			mensagem = get_msg(lista_sockets[0], 0);
-			p1 = atoi(mensagem);
+		mensagem = get_msg(lista_sockets[0], 0);
+		p1 = atoi(mensagem);
 
-			mensagem2 = get_msg(lista_sockets[1], 0);
-			p2 = atoi(mensagem2);
+		mensagem2 = get_msg(lista_sockets[1], 0);
+		p2 = atoi(mensagem2);
 
-			printf("Jogadas (P1: %d) (P2: %d)\n",p1,p2);
-
-			winner = vencedor_rodada(p1, p2);
-
-//			puts(winner.msg);
+		winner = vencedor_rodada(p1, p2);
+		
+		//Placar
+		for(i = 1; i <= indice; i++)
+			enviar_mensagem(winner.msg,lista_sockets[i]);
 			
-			for(i = 0; i <= indice; i++)
-				enviar_mensagem(winner.msg,lista_sockets[i]);
-	}		
-	else if (partida == 1)
-		printf("HEY");
+		}
 
+	
 //comecar_partida(sock);
 	
 		//notificar_partida_iniciada();
@@ -486,3 +490,4 @@ int main(int argc , char *argv[])
 
 	return 0;
 }
+
